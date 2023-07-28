@@ -1,0 +1,20 @@
+#OpenOCD Settings
+
+debug configuration -> startup:	
+	monitor arm semihosting enable
+
+
+c/c++ build -> settings -> miscellaneous -> other flags:
+	-specs=rdimon.specs -lc -lrdimon
+
+
+main.c -> before int main():
+	extern void initialise_monitor_handles(void);
+
+
+main.c -> first in int main():
+	initialise_monitor_handles();
+	
+
+syscalls.c -> Left Click -> Properties -> C/C++ Build -> Settings:
+	If unchecked then check "Exclude resource from build"

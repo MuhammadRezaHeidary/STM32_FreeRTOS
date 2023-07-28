@@ -437,7 +437,10 @@ static void MX_GPIO_Init(void)
 
 /* Commented Codes
  *
-//###################
+
+ * ###############################################################################
+ * @Multi-Tasking
+ * ###############################################################################
 void StartDefaultTask(void const * argument)
 {
 	int a = 0;
@@ -457,7 +460,6 @@ void StartDefaultTask(void const * argument)
   }
 }
 
-//###################
 void StartTask02(void const * argument)
 {
 	int a = 0;
@@ -474,7 +476,6 @@ void StartTask02(void const * argument)
   }
 }
 
-//###################
 void StartTask03(void const * argument)
 {
 	int a = 0;
@@ -491,6 +492,161 @@ void StartTask03(void const * argument)
 	  }
   }
 }
+
+
+ * ###############################################################################
+ * @Semaphore: Binary Semaphore
+ * ###############################################################################
+void StartDefaultTask(void const * argument)
+{
+  for(;;)
+  {
+	  char *strTBN1 = "TASK Below Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN1, strlen(strTBN1), 100) == HAL_OK)
+	  	  printf((char *)strTBN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTBN2 = "TASK Below Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN2, strlen(strTBN2), 100) == HAL_OK)
+	  	  printf((char *)strTBN2);
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTBN3 = "TASK Below Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN3, strlen(strTBN3), 100) == HAL_OK)
+	  	  printf((char *)strTBN3);
+
+	  osDelay(500);
+  }
+}
+
+void StartTask02(void const * argument)
+{
+  for(;;)
+  {
+	  char *strTAN1 = "TASK Above Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN1, strlen(strTAN1), 100) == HAL_OK)
+	  	  printf((char *)strTAN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTAN2 = "TASK Above Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN2, strlen(strTAN2), 100) == HAL_OK)
+	  	  printf((char *)strTAN2);
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTAN3 = "TASK Above Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN3, strlen(strTAN3), 100) == HAL_OK)
+	  	  printf((char *)strTAN3);
+
+	  osDelay(500);
+  }
+}
+
+void StartTask03(void const * argument)
+{
+  for(;;)
+  {
+	  char *strTN1 = "TASK Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN1, strlen(strTN1), 100) == HAL_OK)
+	  	  printf((char *)strTN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTN2 = "TASK Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN2, strlen(strTN2), 100) == HAL_OK)
+	  	  printf((char *)strTN2);
+
+	  while(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTN3 = "TASK Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN3, strlen(strTN3), 100) == HAL_OK)
+	  	  printf((char *)strTN3);
+
+	  osDelay(500);
+  }
+}
+
+
+ * ###############################################################################
+ * @Semaphore: Binary Semaphore -> Priority Inversion
+ * ###############################################################################
+void StartDefaultTask(void const * argument)
+{
+  for(;;)
+  {
+	  char *strTBN1 = "TASK Below Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN1, strlen(strTBN1), 100) == HAL_OK)
+	  	  printf((char *)strTBN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTBN2 = "TASK Below Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN2, strlen(strTBN2), 100) == HAL_OK)
+	  	  printf((char *)strTBN2);
+
+	  while(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTBN3 = "TASK Below Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN3, strlen(strTBN3), 100) == HAL_OK)
+	  	  printf((char *)strTBN3);
+
+	  osDelay(500);
+  }
+}
+
+void StartTask02(void const * argument)
+{
+  for(;;)
+  {
+	  char *strTAN1 = "TASK Above Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN1, strlen(strTAN1), 100) == HAL_OK)
+	  	  printf((char *)strTAN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTAN2 = "TASK Above Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN2, strlen(strTAN2), 100) == HAL_OK)
+	  	  printf((char *)strTAN2);
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTAN3 = "TASK Above Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN3, strlen(strTAN3), 100) == HAL_OK)
+	  	  printf((char *)strTAN3);
+
+	  osDelay(500);
+  }
+}
+
+void StartTask03(void const * argument)
+{
+  for(;;)
+  {
+	  char *strTN1 = "TASK Normal in (no Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN1, strlen(strTN1), 100) == HAL_OK)
+	  	  printf((char *)strTN1);
+
+	  char *strTN2 = "TASK Normal out (no Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN2, strlen(strTN2), 100) == HAL_OK)
+	  	  printf((char *)strTN2);
+
+	  osDelay(500);
+
+  }
+}
+
+
+
+
+
+
  *
  */
 
@@ -519,6 +675,8 @@ void StartDefaultTask(void const * argument)
 	  char *strTBN2 = "TASK Below Normal (Semaphore acquired by task)\n";
 	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN2, strlen(strTBN2), 100) == HAL_OK)
 	  	  printf((char *)strTBN2);
+
+	  while(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
 
 	  osSemaphoreRelease(BinSemHandle);
 
@@ -579,23 +737,13 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  char *strTN1 = "TASK Normal (before Semaphore)\n";
+	  char *strTN1 = "TASK Normal in (no Semaphore)\n";
 	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN1, strlen(strTN1), 100) == HAL_OK)
 	  	  printf((char *)strTN1);
 
-	  osSemaphoreWait(BinSemHandle, osWaitForever);
-
-	  char *strTN2 = "TASK Normal (Semaphore acquired by task)\n";
+	  char *strTN2 = "TASK Normal out (no Semaphore)\n";
 	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN2, strlen(strTN2), 100) == HAL_OK)
 	  	  printf((char *)strTN2);
-
-	  while(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
-
-	  osSemaphoreRelease(BinSemHandle);
-
-	  char *strTN3 = "TASK Normal (Semaphore Released)\n";
-	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN3, strlen(strTN3), 100) == HAL_OK)
-	  	  printf((char *)strTN3);
 
 	  osDelay(500);
 

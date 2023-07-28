@@ -1,6 +1,8 @@
 <h1>STM32_FreeRTOS</h1>
 
-<li>STM32_FreeRTOS Example with STM32F3Discovery Kit</li>
+<li>STM32_FreeRTOS Example with STM32F3Discovery Kit in STM32CUBEIDE</li>
+
+<li><i><b>CMSIS_V1 OS</b></i> is used in this project as RTOS Library.</li>
 
 <li>Only Source Code is added and for using this sample code you should create and initilize project by yourself</li>
 

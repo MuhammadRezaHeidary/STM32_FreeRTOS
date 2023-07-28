@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -434,20 +435,12 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
+/* Commented Codes
+ *
+//###################
 void StartDefaultTask(void const * argument)
 {
-  /* USER CODE BEGIN 5 */
 	int a = 0;
-  /* Infinite loop */
   for(;;)
   {
 	  printf("TASK 1:%d\n", a++);
@@ -462,8 +455,82 @@ void StartDefaultTask(void const * argument)
 		  osDelayUntil(&PreviousWakeTime, 2000);
 	  }
   }
+}
+
+//###################
+void StartTask02(void const * argument)
+{
+	int a = 0;
+  for(;;)
+  {
+//	  state_t2 = osThreadYield();
+	  printf("TASK 2:%d,%d\n", a++, state_t2);
+	  send_uart_task2();
+	  HAL_GPIO_TogglePin(LD8_GPIO_Port, LD8_Pin);
+	  osDelay(1000);
+	  if(a == 11) {
+		  osThreadResume(defaultTaskHandle);
+	  }
+  }
+}
+
+//###################
+void StartTask03(void const * argument)
+{
+	int a = 0;
+
+  for(;;)
+  {
+	  printf("TASK 3:%d\n", a++);
+	  send_uart_task3();
+	  HAL_GPIO_TogglePin(LD9_GPIO_Port, LD9_Pin);
+	  while(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
+	  osDelay(1000);
+	  if(a == 7) {
+		  osThreadSuspend(defaultTaskHandle);
+	  }
+  }
+}
+ *
+ */
+
+
+/* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void const * argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+	  char *strTBN1 = "TASK Below Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN1, strlen(strTBN1), 100) == HAL_OK)
+	  	  printf((char *)strTBN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTBN2 = "TASK Below Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN2, strlen(strTBN2), 100) == HAL_OK)
+	  	  printf((char *)strTBN2);
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTBN3 = "TASK Below Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTBN3, strlen(strTBN3), 100) == HAL_OK)
+	  	  printf((char *)strTBN3);
+
+	  osDelay(500);
+  }
   /* USER CODE END 5 */
 }
+
 
 /* USER CODE BEGIN Header_StartTask02 */
 /**
@@ -475,18 +542,26 @@ void StartDefaultTask(void const * argument)
 void StartTask02(void const * argument)
 {
   /* USER CODE BEGIN StartTask02 */
-	int a = 0;
   /* Infinite loop */
   for(;;)
   {
-//	  state_t2 = osThreadYield();
-	  printf("TASK 2:%d,%d\n", a++, state_t2);
-	  send_uart_task2();
-	  HAL_GPIO_TogglePin(LD8_GPIO_Port, LD8_Pin);
-	  osDelay(1000);
-	  if(a == 11) {
-		  osThreadResume(defaultTaskHandle);
-	  }
+	  char *strTAN1 = "TASK Above Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN1, strlen(strTAN1), 100) == HAL_OK)
+	  	  printf((char *)strTAN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTAN2 = "TASK Above Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN2, strlen(strTAN2), 100) == HAL_OK)
+	  	  printf((char *)strTAN2);
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTAN3 = "TASK Above Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTAN3, strlen(strTAN3), 100) == HAL_OK)
+	  	  printf((char *)strTAN3);
+
+	  osDelay(500);
   }
   /* USER CODE END StartTask02 */
 }
@@ -501,19 +576,29 @@ void StartTask02(void const * argument)
 void StartTask03(void const * argument)
 {
   /* USER CODE BEGIN StartTask03 */
-	int a = 0;
-
   /* Infinite loop */
   for(;;)
   {
-	  printf("TASK 3:%d\n", a++);
-	  send_uart_task3();
-	  HAL_GPIO_TogglePin(LD9_GPIO_Port, LD9_Pin);
+	  char *strTN1 = "TASK Normal (before Semaphore)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN1, strlen(strTN1), 100) == HAL_OK)
+	  	  printf((char *)strTN1);
+
+	  osSemaphoreWait(BinSemHandle, osWaitForever);
+
+	  char *strTN2 = "TASK Normal (Semaphore acquired by task)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN2, strlen(strTN2), 100) == HAL_OK)
+	  	  printf((char *)strTN2);
+
 	  while(!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin));
-	  osDelay(1000);
-	  if(a == 7) {
-		  osThreadSuspend(defaultTaskHandle);
-	  }
+
+	  osSemaphoreRelease(BinSemHandle);
+
+	  char *strTN3 = "TASK Normal (Semaphore Released)\n";
+	  if(HAL_UART_Transmit(&huart4, (uint8_t *)strTN3, strlen(strTN3), 100) == HAL_OK)
+	  	  printf((char *)strTN3);
+
+	  osDelay(500);
+
   }
   /* USER CODE END StartTask03 */
 }
